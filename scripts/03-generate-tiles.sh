@@ -32,9 +32,9 @@ tippecanoe -o "$DATA_DIR/infra-survey.pmtiles" -f \
 echo "Tile generation complete:"
 ls -lh "$DATA_DIR"/*.pmtiles
 
-# Copy to web/tiles/ for serving
+# Copy to docs/tiles/ for serving
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-WEB_TILES="$SCRIPT_DIR/../web/tiles"
+WEB_TILES="$SCRIPT_DIR/../docs/tiles"
 mkdir -p "$WEB_TILES"
 cp "$DATA_DIR/poi-survey.pmtiles" "$DATA_DIR/infra-survey.pmtiles" "$WEB_TILES/"
-echo "Copied to web/tiles/ for serving"
+echo "Copied to docs/tiles/ for serving"
