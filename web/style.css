@@ -75,6 +75,45 @@ body {
     vertical-align: middle;
 }
 
+.info-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background: #ccc;
+    color: #fff;
+    font-size: 10px;
+    font-weight: bold;
+    font-style: italic;
+    font-family: Georgia, serif;
+    margin-left: 4px;
+    vertical-align: middle;
+    cursor: help;
+    position: relative;
+}
+
+.info-icon:hover {
+    background: #3498db;
+}
+
+.tooltip {
+    position: fixed;
+    background: #333;
+    color: #fff;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 11px;
+    padding: 6px 10px;
+    border-radius: 4px;
+    white-space: pre;
+    width: max-content;
+    max-width: 240px;
+    z-index: 100;
+    pointer-events: none;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
 .legend {
     display: flex;
     flex-direction: column;

@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Tucson Survey Needs — OpenStreetMap</title>
+    <title>Bellingham Survey Needs — OpenStreetMap</title>
     <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4/dist/maplibre-gl.css">
     <link rel="stylesheet" href="style.css">
 </head>
@@ -19,25 +19,38 @@
 
     <hr>
 
-    <h3>SliceOSM Layers</h3>
-    <label><input type="checkbox" data-layer="pois" checked> POIs needing survey</label>
-    <label><input type="checkbox" data-layer="museums" checked> Museums</label>
+    <h3>Places to Go</h3>
+    <label>
+        <input type="checkbox" data-layer="parks" checked> Parks
+        <span class="info-icon" data-tooltip="Layercake GeoParquet&#xa;data.openstreetmap.us">i</span>
+    </label>
+    <label>
+        <input type="checkbox" data-layer="museums" checked> Museums
+        <span class="info-icon" data-tooltip="SliceOSM PBF extract&#xa;slice.openstreetmap.us">i</span>
+    </label>
+
+    <hr>
+
+    <h3>Things to Survey</h3>
+    <label>
+        <input type="checkbox" data-layer="roads" checked> Roads
+        <span class="info-icon" data-tooltip="Layercake GeoParquet&#xa;Checks: name, surface">i</span>
+    </label>
+    <label>
+        <input type="checkbox" data-layer="buildings" checked> Buildings
+        <span class="info-icon" data-tooltip="Layercake GeoParquet&#xa;Checks: building:levels">i</span>
+    </label>
+    <label>
+        <input type="checkbox" data-layer="pois" checked> POIs
+        <span class="info-icon" data-tooltip="SliceOSM PBF extract&#xa;Checks: opening_hours, phone, website, cuisine">i</span>
+    </label>
 
     <div class="legend legend-inline">
         <div class="legend-item"><span class="swatch round" style="background:#8e44ad"></span> Museum</div>
+        <div class="legend-item"><span class="swatch" style="background:#27ae60"></span> Park</div>
         <div class="legend-item"><span class="swatch round" style="background:#2ecc71"></span> 1 missing</div>
-        <div class="legend-item"><span class="swatch round" style="background:#f39c12"></span> 2–3 missing</div>
-        <div class="legend-item"><span class="swatch round" style="background:#e74c3c"></span> 4 missing</div>
-    </div>
-
-    <h3>Layercake Layers</h3>
-    <label><input type="checkbox" data-layer="roads" checked> Roads needing survey</label>
-    <label><input type="checkbox" data-layer="buildings" checked> Buildings needing survey</label>
-    <label><input type="checkbox" data-layer="parks" checked> Parks</label>
-
-    <div class="legend legend-inline">
-        <div class="legend-item"><span class="swatch" style="background:#f39c12"></span> 1 tag missing</div>
-        <div class="legend-item"><span class="swatch" style="background:#e74c3c"></span> 2 tags missing</div>
+        <div class="legend-item"><span class="swatch" style="background:#f39c12"></span> 2-3 missing</div>
+        <div class="legend-item"><span class="swatch" style="background:#e74c3c"></span> 4 missing</div>
     </div>
 
     <hr>

@@ -1,23 +1,25 @@
 #!/usr/bin/env bash
-# Query Layercake GeoParquet files remotely via DuckDB for Tucson area.
+# Query Layercake GeoParquet files remotely via DuckDB.
 # Exports TSV files with WKT geometry for the Python scoring script to consume.
+#
+# Usage: 02-query-layercake.sh <data_dir> <xmin> <ymin> <xmax> <ymax>
 set -euo pipefail
 
 DATA_DIR="${1:-data}"
+XMIN="${2:--111.1}"
+YMIN="${3:-32.1}"
+XMAX="${4:--110.8}"
+YMAX="${5:-32.35}"
+
 mkdir -p "$DATA_DIR"
 
 # Use duckdb from PATH, or fall back to known install location
 DUCKDB="$(which duckdb 2>/dev/null || echo "$HOME/.duckdb/cli/latest/duckdb")"
 
-# Tucson bounding box (generous extent covering metro area)
-XMIN=-111.1
-XMAX=-110.8
-YMIN=32.1
-YMAX=32.35
-
 LAYERCAKE_BASE="https://data.openstreetmap.us/layercake"
 
 echo "=== Querying Layercake GeoParquet via DuckDB ==="
+echo "Bounding box: $XMIN,$YMIN,$XMAX,$YMAX"
 
 "$DUCKDB" <<SQL
 INSTALL spatial; LOAD spatial;

@@ -7,7 +7,7 @@ const TILES_BASE = new URL("tiles/", window.location.href).href;
 const POI_PMTILES_URL = `pmtiles://${TILES_BASE}poi-survey.pmtiles`;
 const INFRA_PMTILES_URL = `pmtiles://${TILES_BASE}infra-survey.pmtiles`;
 
-const TUCSON_CENTER = [-110.9747, 32.2226];
+const BELLINGHAM_CENTER = [-122.48, 48.75];
 const INITIAL_ZOOM = 13;
 const BUFFER_METERS = 200;
 
@@ -162,7 +162,7 @@ const basemapStyle = {
 const map = new maplibregl.Map({
     container: "map",
     style: basemapStyle,
-    center: TUCSON_CENTER,
+    center: BELLINGHAM_CENTER,
     zoom: INITIAL_ZOOM,
     hash: true
 });
@@ -336,65 +336,61 @@ map.on("load", () => {
         }
     });
 
-    // --- Click popups ---
-    const interactiveLayers = ["roads", "pois", "buildings"];
+    // --- Click popups (topmost layer wins) ---
+    // Priority order: top-rendered layers first
+    const clickableLayers = ["pois", "museums", "roads", "buildings", "parks"];
 
-    interactiveLayers.forEach(layerId => {
-        map.on("click", layerId, (e) => {
-            const f = e.features[0];
+    map.on("click", (e) => {
+        // Query all clickable layers at the click point, pick the first hit
+        for (const layerId of clickableLayers) {
+            const features = map.queryRenderedFeatures(e.point, { layers: [layerId] });
+            if (features.length === 0) continue;
+
+            const f = features[0];
             const props = f.properties;
-            const missingTags = props.missing_tags ? props.missing_tags.split(",") : [];
-            const name = props.name || "(unnamed)";
-            const osmId = props.osm_id || "";
 
-            // Build iD editor URL
-            let editUrl = "https://www.openstreetmap.org/edit?editor=id";
-            if (osmId) {
-                const parts = osmId.split("/");
-                if (parts.length === 2) {
-                    editUrl += `&${parts[0]}=${parts[1]}`;
+            if (layerId === "parks" || layerId === "museums") {
+                const name = props.name || `(unnamed ${layerId.slice(0, -1)})`;
+                const score = props.survey_score || 0;
+                const label = layerId === "parks" ? "Park" : "Museum";
+                new maplibregl.Popup()
+                    .setLngLat(e.lngLat)
+                    .setHTML(`<h3>${name}</h3><div class="popup-category">${label}</div><p><strong>${score}</strong> missing tags within ${BUFFER_METERS}m</p>`)
+                    .addTo(map);
+            } else {
+                const missingTags = props.missing_tags ? props.missing_tags.split(",") : [];
+                const name = props.name || "(unnamed)";
+                const osmId = props.osm_id || "";
+
+                let editUrl = "https://www.openstreetmap.org/edit?editor=id";
+                if (osmId) {
+                    const parts = osmId.split("/");
+                    if (parts.length === 2) {
+                        editUrl += `&${parts[0]}=${parts[1]}`;
+                    }
                 }
+
+                const missingHtml = missingTags
+                    .filter(t => t.trim())
+                    .map(t => `<li><code>${t}</code></li>`)
+                    .join("");
+
+                new maplibregl.Popup({ maxWidth: "280px" })
+                    .setLngLat(e.lngLat)
+                    .setHTML(`
+                        <h3>${name}</h3>
+                        <div class="popup-category">${props.category || layerId}</div>
+                        ${missingHtml ? `<ul class="popup-missing">${missingHtml}</ul>` : ""}
+                        <a class="popup-edit" href="${editUrl}" target="_blank">Edit in iD</a>
+                    `)
+                    .addTo(map);
             }
-
-            const missingHtml = missingTags
-                .filter(t => t.trim())
-                .map(t => `<li><code>${t}</code></li>`)
-                .join("");
-
-            const html = `
-                <h3>${name}</h3>
-                <div class="popup-category">${props.category || layerId}</div>
-                ${missingHtml ? `<ul class="popup-missing">${missingHtml}</ul>` : ""}
-                <a class="popup-edit" href="${editUrl}" target="_blank">Edit in iD</a>
-            `;
-
-            new maplibregl.Popup({ maxWidth: "280px" })
-                .setLngLat(e.lngLat)
-                .setHTML(html)
-                .addTo(map);
-        });
-
-        // Cursor changes
-        map.on("mouseenter", layerId, () => {
-            map.getCanvas().style.cursor = "pointer";
-        });
-        map.on("mouseleave", layerId, () => {
-            map.getCanvas().style.cursor = "";
-        });
+            return; // Only show one popup
+        }
     });
 
-    // Also handle clicks on parks and museums for info (with survey score)
-    ["parks", "museums"].forEach(layerId => {
-        map.on("click", layerId, (e) => {
-            const props = e.features[0].properties;
-            const name = props.name || `(unnamed ${layerId.slice(0, -1)})`;
-            const score = props.survey_score || 0;
-            const label = layerId === "parks" ? "Park" : "Museum";
-            new maplibregl.Popup()
-                .setLngLat(e.lngLat)
-                .setHTML(`<h3>${name}</h3><div class="popup-category">${label}</div><p><strong>${score}</strong> missing tags within ${BUFFER_METERS}m</p>`)
-                .addTo(map);
-        });
+    // Cursor changes for all interactive layers
+    clickableLayers.forEach(layerId => {
         map.on("mouseenter", layerId, () => map.getCanvas().style.cursor = "pointer");
         map.on("mouseleave", layerId, () => map.getCanvas().style.cursor = "");
     });
@@ -423,5 +419,27 @@ document.querySelectorAll("#controls input[data-layer]").forEach(input => {
 map.on("load", () => {
     document.querySelectorAll("#controls input[data-layer]").forEach(input => {
         applyLayerVisibility(input.dataset.layer, input.checked);
+    });
+});
+
+// --- Info icon tooltips (rendered to body to avoid panel clipping) ---
+const tooltipEl = document.createElement("div");
+tooltipEl.className = "tooltip";
+tooltipEl.style.display = "none";
+document.body.appendChild(tooltipEl);
+
+document.querySelectorAll(".info-icon").forEach(icon => {
+    icon.addEventListener("mouseenter", (e) => {
+        const text = icon.getAttribute("data-tooltip");
+        if (!text) return;
+        tooltipEl.textContent = text;
+        tooltipEl.style.display = "block";
+        const rect = icon.getBoundingClientRect();
+        const tipRect = tooltipEl.getBoundingClientRect();
+        tooltipEl.style.top = (rect.top + rect.height / 2 - tipRect.height / 2) + "px";
+        tooltipEl.style.left = (rect.left - tipRect.width - 8) + "px";
+    });
+    icon.addEventListener("mouseleave", () => {
+        tooltipEl.style.display = "none";
     });
 });
