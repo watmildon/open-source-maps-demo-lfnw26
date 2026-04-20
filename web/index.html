@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Tucson Survey Needs — OpenStreetMap</title>
+    <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4/dist/maplibre-gl.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="map"></div>
+
+<div id="controls">
+    <h2>Survey Needs</h2>
+    <p class="subtitle">OSM features near parks &amp; museums that may need field surveying</p>
+
+    <p class="legend-note">Parks &amp; museums sized by nearby survey needs</p>
+
+    <hr>
+
+    <h3>SliceOSM Layers</h3>
+    <label><input type="checkbox" data-layer="pois" checked> POIs needing survey</label>
+    <label><input type="checkbox" data-layer="museums" checked> Museums</label>
+
+    <div class="legend legend-inline">
+        <div class="legend-item"><span class="swatch round" style="background:#8e44ad"></span> Museum</div>
+        <div class="legend-item"><span class="swatch round" style="background:#2ecc71"></span> 1 missing</div>
+        <div class="legend-item"><span class="swatch round" style="background:#f39c12"></span> 2–3 missing</div>
+        <div class="legend-item"><span class="swatch round" style="background:#e74c3c"></span> 4 missing</div>
+    </div>
+
+    <h3>Layercake Layers</h3>
+    <label><input type="checkbox" data-layer="roads" checked> Roads needing survey</label>
+    <label><input type="checkbox" data-layer="buildings" checked> Buildings needing survey</label>
+    <label><input type="checkbox" data-layer="parks" checked> Parks</label>
+
+    <div class="legend legend-inline">
+        <div class="legend-item"><span class="swatch" style="background:#f39c12"></span> 1 tag missing</div>
+        <div class="legend-item"><span class="swatch" style="background:#e74c3c"></span> 2 tags missing</div>
+    </div>
+
+    <hr>
+
+    <div class="credits">
+        <p><strong>Built with OSM US tools:</strong></p>
+        <ul>
+            <li><a href="https://slice.openstreetmap.us/" target="_blank">SliceOSM</a> — POI data extract</li>
+            <li><a href="https://openstreetmap.us/our-work/layercake/" target="_blank">Layercake</a> — Roads, buildings, parks via GeoParquet</li>
+            <li><a href="https://tiles.openstreetmap.us/" target="_blank">OpenTileService</a> — Basemap tiles</li>
+        </ul>
+        <p class="attribution">Data &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors</p>
+    </div>
+</div>
+
+<script src="https://unpkg.com/maplibre-gl@4/dist/maplibre-gl.js"></script>
+<script src="https://unpkg.com/pmtiles@3/dist/pmtiles.js"></script>
+<script src="app.js"></script>
+
+</body>
+</html>

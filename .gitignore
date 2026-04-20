@@ -1,0 +1,6 @@
+# Intermediate data files from the processing pipeline
+data/
+
+# Python
+__pycache__/
+*.pyc
