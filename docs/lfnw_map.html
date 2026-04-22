@@ -64,7 +64,7 @@
         }
         .legend-line {
             width: 24px;
-            height: 3px;
+            height: 2px;
             background: repeating-linear-gradient(
                 to right,
                 #e67e22 0px, #e67e22 6px,
@@ -122,16 +122,18 @@ map.on("load", () => {
         data: "Friday_Stroll.geojson"
     });
 
+    const firstLabelLayer = map.getStyle().layers.find(l => l.type === "symbol")?.id;
+
     map.addLayer({
         id: "friday-stroll-line",
         type: "line",
         source: "friday-stroll",
         paint: {
             "line-color": "#e67e22",
-            "line-width": 3,
+            "line-width": 2,
             "line-dasharray": [2, 1.5]
         }
-    });
+    }, firstLabelLayer);
 
     fetch("conference_locations.geojson")
         .then(r => r.json())
